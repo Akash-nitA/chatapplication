@@ -1,0 +1,9 @@
+<div class="form-container" [formGroup]="loginForm">
+
+    <input placeholder="Enter username" formControlName = "name">
+    <p style="color: red;" *ngIf="loginForm.get('name')?.invalid && loginForm.get('name')?.touched">*username should not be empty</p>
+    <input id="emailField" placeholder="Enter email address" formControlName = "email">
+    <p style="color: red;" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">*email should not be empty</p>
+    <p id="errorMessage" style="color:red;" *ngIf="loginForm.get('name')?.errors?.['userExists']">User Exists</p>
+    <button (click)="saveData()">Submit</button>
+</div>
