@@ -1,9 +1,11 @@
 package com.example.chatApp.Services.Impl;
 
+import java.net.PasswordAuthentication;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.chatApp.DTO.StudentDto;
@@ -22,9 +24,11 @@ import java.util.List;
 public class AuthServiceImpl implements AuthService{
 	private final AuthRepo authRepo;
 	private final Logger logger=LoggerFactory.getLogger(AuthServiceImpl.class);
-	public AuthServiceImpl(AuthRepo authRepo) {
+    private final PasswordEncoder passwordEncoder;
+	public AuthServiceImpl(AuthRepo authRepo,PasswordEncoder passwordEncoder) {
 		this.authRepo = authRepo;
 //		this.logger = null;
+        this.passwordEncoder=passwordEncoder;
 		
 	}
 
@@ -33,7 +37,7 @@ public class AuthServiceImpl implements AuthService{
 		// TODO Auto-generated method stub
 		Optional<Students> Student=authRepo.findOneByName(student.getName());
 		
-		if(!Student.isEmpty()) {
+		if(Student.isPresent()) {
 			ResponseEntity<?> response=ResponseEntity.status(409).body("User Already Exists");
 			logger.info("custom log value"+response);
 			return response;
@@ -41,7 +45,7 @@ public class AuthServiceImpl implements AuthService{
 		Students newStudent=new Students();
 		newStudent.setName(student.getName());
 		newStudent.setEmail(student.getEmail());
-		newStudent.setPassword(student.getPassword());
+		newStudent.setPassword(passwordEncoder.encode(student.getPassword()));
 		newStudent.setCreatedAt(LocalDateTime.now());
 //		newStudent.setRoles(new List<String>());
 		authRepo.save(newStudent);
