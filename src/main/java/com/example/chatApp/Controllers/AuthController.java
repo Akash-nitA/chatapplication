@@ -47,7 +47,10 @@ public class AuthController {
 	}
     @PostMapping("/login")
     ResponseEntity<?> loginStudent(@RequestBody LoginDto loginDto){
-        return ResponseEntity.ok(loginService.login(loginDto.getName(), loginDto.getPassword()));
+        Map<String,String> mp=new HashMap<>();
+        mp.put("token",loginService.login(loginDto.getName(), loginDto.getPassword()));
+        return ResponseEntity.ok(mp);
     }
+    
 
 }
