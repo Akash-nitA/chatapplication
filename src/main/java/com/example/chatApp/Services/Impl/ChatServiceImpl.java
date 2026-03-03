@@ -1,5 +1,6 @@
 package com.example.chatApp.Services.Impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,6 @@ import com.example.chatApp.Models.Students;
 import com.example.chatApp.Repository.AuthRepo;
 import com.example.chatApp.Repository.ChatRepo;
 import com.example.chatApp.Services.ChatService;
-
-import com.example.chatApp.Repository.ChatRepo;
 
 @Service
 public class ChatServiceImpl implements ChatService{
@@ -27,16 +26,21 @@ public class ChatServiceImpl implements ChatService{
 
 	@Override
 	public ResponseEntity<?> sendMessage(MessageBody message) {
-		Optional<Students> reciever= authRepo.findOneByName(message.getReciever());
+		Optional<Students> receiver= authRepo.findOneByName(message.getReciever());
 		Optional<Students> sender=authRepo.findOneByName(message.getSender());
-		if(reciever.isEmpty()) return ResponseEntity.notFound().build();
+		if(receiver.isEmpty() || sender.isEmpty()) return ResponseEntity.notFound().build();
 		Conversations conversation=new Conversations();
-		conversation.setReciever(reciever.get());
+		conversation.setReciever(receiver.get());
 		conversation.setSender(sender.get());
 		conversation.setMessage(message.getMessage());
 		conversation.setStatus("delivered");
 		chatRepo.save(conversation);
 		return ResponseEntity.ok().build();
 	}
+    @Override
+    public List<Conversations> getAllMessage(String username){
+        Long id = (long) authRepo.findIdByName(username).get(0).getId();
+        return chatRepo.findByReciever_Id(id);
+    }
 
 }

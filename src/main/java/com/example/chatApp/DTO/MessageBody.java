@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageBody {
-	private String Message;
+	private String message;
 	private String status;
 	private String sender;
 	private String reciever;

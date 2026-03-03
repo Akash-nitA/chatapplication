@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import com.example.chatApp.DTO.MessageBody;
 import com.example.chatApp.Services.ChatService;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
@@ -28,6 +30,12 @@ public class ChatController {
 		}
 		return ResponseEntity.ok().body("Message Sent Succesfully");
 	}
+
+    @GetMapping("/messages")
+    ResponseEntity<?> getAllMessages(Principal principal){
+        String username = principal.getName();
+        return ResponseEntity.ok().body(chatService.getAllMessage(username));
+    }
 	
 
 }
