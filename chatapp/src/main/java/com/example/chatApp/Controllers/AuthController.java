@@ -36,14 +36,14 @@ public class AuthController {
 	ResponseEntity<?> registerStudent(@RequestBody StudentDto studentDto){
 		ResponseEntity<?> response=authService.createUser(studentDto);
 		Map<String,String> responseObj=new HashMap<>();
-		if(response.getStatusCode()==HttpStatus.valueOf(409)) { 
+		if(response.getStatusCode()==HttpStatus.CONFLICT) { 
 			responseObj.put("message", "User with this username already exists");
 			return ResponseEntity.status(409).body(responseObj);
 		}
 		
 		responseObj.put("message", "user registration successfull");
 		
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(responseObj);
 	}
     @PostMapping("/login")
     ResponseEntity<?> loginStudent(@RequestBody LoginDto loginDto){

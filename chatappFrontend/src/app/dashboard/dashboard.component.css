@@ -1,0 +1,149 @@
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+
+.sidebar {
+    width: 300px;
+    background: #1f2937;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    padding: 20px;
+    margin: 0;
+    border-bottom: 1px solid #374151;
+}
+
+.user {
+    display: flex;
+    padding: 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #374151;
+}
+
+.user:hover {
+    background: #374151;
+}
+
+.user.active {
+    background: #4b5563;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background:#6b7280;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-right:10px;
+}
+
+.user-info {
+    display:flex;
+    flex-direction:column;
+}
+
+.name {
+    font-weight:bold;
+}
+
+.last-msg {
+    font-size:12px;
+    color:#d1d5db;
+}
+
+/* Chat container */
+
+.chat-container {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.chat-header {
+    background:white;
+    padding:20px;
+    border-bottom:1px solid #e5e7eb;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.messages {
+    flex:1;
+    padding:20px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+/* Messages */
+
+.message {
+    padding:10px 14px;
+    max-width:60%;
+    border-radius:12px;
+}
+
+.received {
+    background:#e5e7eb;
+    align-self:flex-start;
+}
+
+.sent {
+    background:#3b82f6;
+    color:white;
+    align-self:flex-end;
+}
+
+/* Input */
+
+.chat-input {
+    display:flex;
+    padding:15px;
+    border-top:1px solid #e5e7eb;
+    background:white;
+}
+
+.chat-input input {
+    flex:1;
+    padding:10px;
+    border:1px solid #d1d5db;
+    border-radius:6px;
+}
+
+.chat-input button {
+    margin-left:10px;
+    padding:10px 20px;
+    border:none;
+    background:#3b82f6;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.chat-input button:hover {
+    background:#2563eb;
+}
+.logout-btn {
+    padding: 8px 14px;
+    border: none;
+    background: #ef4444;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}

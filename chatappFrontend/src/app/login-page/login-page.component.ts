@@ -30,6 +30,7 @@ export class LoginPageComponent implements OnInit{
     }
 
     this.isLoading = true;
+    this.loginForm.get('name')?.setErrors(null);
     const {name,password} = this.loginForm.value;
     this.username=name;
     this.password=password;
@@ -37,19 +38,20 @@ export class LoginPageComponent implements OnInit{
 
     this.api.loginStudent({"name":this.username,"password":this.password}).subscribe({
       next: (res) => {
-        setTimeout(()=>{
-          console.log('✅ Backend response:', res); // 👈 logs the response from API
-          localStorage.setItem('token',res?.token);
-          console.log("token is ",localStorage.getItem('token'));
-          this.router.navigate(['/dashboard']);
-        },5000);
-        
+        const token = res?.token;
+        if(!token){
+          this.loginForm.get('name')?.setErrors({invalidCreds: true});
+          this.isLoading = false;
+          return;
+        }
+        localStorage.setItem('token', token);
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('❌ Error response:', err);
         this.loginForm.get('name')?.setErrors({invalidCreds: true});
-        // this.loginForm.get('errorMessage')?.setValue(" User Exists");
-        
+        this.isLoading = false;
       },
     });
 

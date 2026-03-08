@@ -25,9 +25,9 @@ public class ChatServiceImpl implements ChatService{
     }
 
 	@Override
-	public ResponseEntity<?> sendMessage(MessageBody message) {
+	public ResponseEntity<?> sendMessage(MessageBody message, String senderUsername) {
 		Optional<Students> receiver= authRepo.findOneByName(message.getReciever());
-		Optional<Students> sender=authRepo.findOneByName(message.getSender());
+		Optional<Students> sender=authRepo.findOneByName(senderUsername);
 		if(receiver.isEmpty() || sender.isEmpty()) return ResponseEntity.notFound().build();
 		Conversations conversation=new Conversations();
 		conversation.setReciever(receiver.get());

@@ -6,6 +6,6 @@ import com.example.chatApp.DTO.MessageBody;
 import java.util.List;
 
 public interface ChatService {
-	ResponseEntity<?> sendMessage(MessageBody message);
+	ResponseEntity<?> sendMessage(MessageBody message, String senderUsername);
     List<Conversations> getAllMessage(String username);
 }

@@ -22,9 +22,9 @@ public class ChatController {
 		
 	}
 	@PostMapping("/send")
-	ResponseEntity<?> sendMessage(@RequestBody MessageBody message){
+	ResponseEntity<?> sendMessage(@RequestBody MessageBody message, Principal principal){
 		
-		ResponseEntity<?> reply=chatService.sendMessage(message);
+		ResponseEntity<?> reply=chatService.sendMessage(message, principal.getName());
 		if(reply.getStatusCode()==HttpStatus.valueOf(404)) {
 			return ResponseEntity.notFound().build();
 		}
