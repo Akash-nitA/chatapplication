@@ -13,6 +13,8 @@ import com.example.chatApp.DTO.MessageBody;
 import com.example.chatApp.Services.ChatService;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/chat")
@@ -27,9 +29,13 @@ public class ChatController {
 		
 		ResponseEntity<?> reply=chatService.sendMessage(message, principal.getName());
 		if(reply.getStatusCode()==HttpStatus.valueOf(404)) {
-			return ResponseEntity.notFound().build();
+			Map<String, String> responseObj = new HashMap<>();
+			responseObj.put("message", "Sender or receiver not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseObj);
 		}
-		return ResponseEntity.ok().body("Message Sent Succesfully");
+		Map<String, String> responseObj = new HashMap<>();
+		responseObj.put("message", "Message sent successfully");
+		return ResponseEntity.ok(responseObj);
 	}
 
 	@GetMapping("/messages")
