@@ -16,30 +16,44 @@ export class LoginServiceService {
     if(localStorage.getItem('token')==null){
       return false;
     } 
+    const payload = this.parseTokenPayload();
+    if (!payload) {
+      localStorage.removeItem('token');
+      return false;
+    }
+    const currentTime= Date.now()/1000;
+    if(payload.exp && payload.exp<currentTime){
+      localStorage.removeItem('token');
+      return false;
+    }
+    return true;
+  }
+
+  getCurrentUsername(): string | null {
+    const payload = this.parseTokenPayload();
+    if (!payload) {
+      return null;
+    }
+    return payload.sub ?? null;
+  }
+
+  loginStudent(data: any) : Observable<any>{
+    return this.http.post(`${this.url}/login`,data);
+  }
+
+  private parseTokenPayload(): any | null {
     const token=localStorage.getItem('token');
     const parts= token?.split('.');
-    if(parts?.length!=3) return false;
+    if(parts?.length!=3) return null;
     try {
       const payloadBase64 = parts[1]
         .replace(/-/g, '+')
         .replace(/_/g, '/');
       const padded = payloadBase64.padEnd(Math.ceil(payloadBase64.length / 4) * 4, '=');
       const payloadJson=atob(padded);
-      const payload = JSON.parse(payloadJson);
-
-      const currentTime= Date.now()/1000;
-      if(payload.exp && payload.exp<currentTime){
-        localStorage.removeItem('token');
-        return false;
-      }
-
-      return true;
+      return JSON.parse(payloadJson);
     } catch {
-      localStorage.removeItem('token');
-      return false;
+      return null;
     }
-  }
-  loginStudent(data: any) : Observable<any>{
-    return this.http.post(`${this.url}/login`,data);
   }
 }

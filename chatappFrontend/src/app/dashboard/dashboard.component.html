@@ -3,11 +3,17 @@
     <div class="sidebar">
         <h2>Chats</h2>
 
-        <div class="user active">
-            <div class="avatar">A</div>
+        <div class="empty-state" *ngIf="isLoadingUsers">Loading users...</div>
+        <div class="empty-state" *ngIf="!isLoadingUsers && users.length === 0">No users available</div>
+
+        <div class="user"
+             *ngFor="let user of users"
+             [class.active]="selectedUser?.name === user.name"
+             (click)="selectUser(user)">
+            <div class="avatar">{{ user.name.charAt(0) | uppercase }}</div>
             <div class="user-info">
-                <span class="name">Akash123</span>
-                <span class="last-msg">Hey there!</span>
+                <span class="name">{{ user.name }}</span>
+                <span class="last-msg">{{ user.email }}</span>
             </div>
         </div>
 
@@ -16,31 +22,43 @@
     <div class="chat-container">
 
         <div class="chat-header">
-            <h3>Akash123</h3>
+            <h3>{{ selectedUser?.name || 'Select a user' }}</h3>
             <button class="logout-btn" (click)="logout()">Logout</button>
         </div>
 
-        <div class="messages">
-
-            <div class="message received">
-                Hello! How are you?
+        <div class="messages" *ngIf="selectedUser; else noUserSelected">
+            <div class="empty-state" *ngIf="isLoadingMessages">Loading messages...</div>
+            <div class="empty-state" *ngIf="!isLoadingMessages && messages.length === 0">
+                No messages yet. Start the conversation.
             </div>
 
-            <div class="message sent">
-                I'm good! What about you?
+            <div *ngFor="let message of messages"
+                 class="message"
+                 [class.sent]="isSentMessage(message)"
+                 [class.received]="!isSentMessage(message)">
+                {{ message.message }}
             </div>
-
-            <div class="message received">
-                Doing great today.
-            </div>
-
         </div>
+
+        <ng-template #noUserSelected>
+            <div class="messages">
+                <div class="empty-state">Pick a user from the left to start chatting.</div>
+            </div>
+        </ng-template>
 
         <div class="chat-input">
-            <input type="text" placeholder="Type a message...">
-            <button>Send</button>
+            <input type="text"
+                   placeholder="Type a message..."
+                   [(ngModel)]="newMessage"
+                   [disabled]="!selectedUser"
+                   (keydown.enter)="sendMessage()">
+            <button (click)="sendMessage()"
+                    [disabled]="!selectedUser || !newMessage.trim()">
+                Send
+            </button>
         </div>
 
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
     </div>
 
 </div>

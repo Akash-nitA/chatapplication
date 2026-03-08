@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
@@ -31,11 +32,22 @@ public class ChatController {
 		return ResponseEntity.ok().body("Message Sent Succesfully");
 	}
 
-    @GetMapping("/messages")
-    ResponseEntity<?> getAllMessages(Principal principal){
-        String username = principal.getName();
-        return ResponseEntity.ok().body(chatService.getAllMessage(username));
-    }
+	@GetMapping("/messages")
+	ResponseEntity<?> getAllMessages(
+			Principal principal,
+			@RequestParam(name = "with", required = false) String otherUsername
+	){
+		String username = principal.getName();
+		if (otherUsername != null && !otherUsername.isBlank()) {
+			return ResponseEntity.ok().body(chatService.getConversation(username, otherUsername));
+		}
+		return ResponseEntity.ok().body(chatService.getAllMessage(username));
+	}
+
+	@GetMapping("/users")
+	ResponseEntity<?> getChatUsers(Principal principal){
+		return ResponseEntity.ok().body(chatService.getChatUsers(principal.getName()));
+	}
 	
 
 }

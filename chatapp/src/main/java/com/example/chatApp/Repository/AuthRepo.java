@@ -12,4 +12,5 @@ public interface AuthRepo extends JpaRepository<Students,Integer>{
 	Optional<Students> findOneByName(String name);
 
     List<Students> findIdByName(String name);
+	List<Students> findByNameNotOrderByNameAsc(String name);
 }

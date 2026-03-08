@@ -134,6 +134,12 @@
 .chat-input button:hover {
     background:#2563eb;
 }
+
+.chat-input button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
 .logout-btn {
     padding: 8px 14px;
     border: none;
@@ -146,4 +152,18 @@
 
 .logout-btn:hover {
     background: #dc2626;
+}
+
+.empty-state {
+    color: #6b7280;
+    font-size: 14px;
+    padding: 12px;
+    text-align: center;
+}
+
+.error-message {
+    margin: 0;
+    padding: 8px 16px 16px;
+    color: #b91c1c;
+    font-size: 14px;
 }
