@@ -1,0 +1,11 @@
+<div class="autocomplete">
+    <input type="text" placeholder="Enter username" #username [formControl]="searchControl">
+    <ul *ngIf="res.length > 0" class="suggestion-list">
+        <li *ngFor="let user of res" 
+            (click)="selectSuggestion(user)">
+        {{ user }}
+        </li>
+    </ul>
+
+</div>
+<button (click)="getUserDetails(username)" >Submit</button>

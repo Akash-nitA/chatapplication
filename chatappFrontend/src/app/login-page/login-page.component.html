@@ -1,0 +1,32 @@
+<form class="form-container" [formGroup]="loginForm" (ngSubmit)="saveData()">
+
+  <input placeholder="Enter username" formControlName="name">
+  <p style="color: red;"
+     *ngIf="loginForm.get('name')?.hasError('required')
+         && loginForm.get('name')?.touched">
+    *username should not be empty
+  </p>
+
+  <input id="passwordField"
+         placeholder="Enter Password"
+         type="password"
+         formControlName="password">
+  <p style="color: red;"
+     *ngIf="loginForm.get('password')?.hasError('required')
+         && loginForm.get('password')?.touched">
+    *password should not be empty
+  </p>
+
+  <p id="errorMessage"
+     style="color:red;"
+     *ngIf="loginForm.get('name')?.errors?.['invalidCreds']">
+    Invalid Username or Password
+  </p>
+
+  <button type="submit">Submit</button>
+</form>
+
+<div class="overlay" *ngIf="isLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>
+
