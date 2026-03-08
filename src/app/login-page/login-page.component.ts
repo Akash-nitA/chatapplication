@@ -11,11 +11,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class LoginPageComponent implements OnInit{
   username: string = '';
-  email: string ='';
+  password: string ='';
+  isLoading: boolean =false;
   
   loginForm : FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
-    email : new FormControl('',Validators.required),
+    password : new FormControl('',Validators.required),
     errorMessage: new FormControl('')
   });
   constructor(private api:LoginServiceService, private router:Router){}
@@ -24,18 +25,29 @@ export class LoginPageComponent implements OnInit{
   }
 
   saveData(){
-    const {name,email} = this.loginForm.value;
+    if (this.loginForm.invalid || this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+    const {name,password} = this.loginForm.value;
+    this.username=name;
+    this.password=password;
 
 
-
-    this.api.registerStudent({"name":this.username,"email":this.email}).subscribe({
+    this.api.loginStudent({"name":this.username,"password":this.password}).subscribe({
       next: (res) => {
-        console.log('✅ Backend response:', res); // 👈 logs the response from API
-        this.router.navigate(['/login']);
+        setTimeout(()=>{
+          console.log('✅ Backend response:', res); // 👈 logs the response from API
+          localStorage.setItem('token',res?.token);
+          console.log("token is ",localStorage.getItem('token'));
+          this.router.navigate(['/dashboard']);
+        },5000);
+        
       },
       error: (err) => {
         console.error('❌ Error response:', err);
-        this.loginForm.get('name')?.setErrors({userExists: true});
+        this.loginForm.get('name')?.setErrors({invalidCreds: true});
         // this.loginForm.get('errorMessage')?.setValue(" User Exists");
         
       },
