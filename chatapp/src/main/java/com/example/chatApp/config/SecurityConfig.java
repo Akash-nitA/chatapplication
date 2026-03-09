@@ -56,6 +56,7 @@ public class SecurityConfig {
 					.authorizeHttpRequests(authorize-> authorize
 					.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 					.requestMatchers("/auth/**").permitAll()
+					.requestMatchers("/ws/**").permitAll()
 					.anyRequest().authenticated()
 					)
 				.authenticationProvider(daoAuthenticationProvider)

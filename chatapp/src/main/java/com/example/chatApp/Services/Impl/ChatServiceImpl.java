@@ -16,16 +16,19 @@ import com.example.chatApp.Models.Students;
 import com.example.chatApp.Repository.AuthRepo;
 import com.example.chatApp.Repository.ChatRepo;
 import com.example.chatApp.Services.ChatService;
+import com.example.chatApp.Utility.ChatWebSocketHandler;
 
 @Service
 public class ChatServiceImpl implements ChatService{
 
     private final ChatRepo chatRepo;
     private final AuthRepo authRepo;
+    private final ChatWebSocketHandler chatWebSocketHandler;
 
-    ChatServiceImpl(ChatRepo chatRepo, AuthRepo authRepo) {
+    ChatServiceImpl(ChatRepo chatRepo, AuthRepo authRepo, ChatWebSocketHandler chatWebSocketHandler) {
         this.chatRepo = chatRepo;
 		this.authRepo = authRepo;
+        this.chatWebSocketHandler = chatWebSocketHandler;
     }
 
 	@Override
@@ -36,11 +39,12 @@ public class ChatServiceImpl implements ChatService{
 		Conversations conversation=new Conversations();
 		conversation.setReciever(receiver.get());
 		conversation.setSender(sender.get());
-		conversation.setMessage(message.getMessage());
-		conversation.setStatus("delivered");
-		chatRepo.save(conversation);
-		return ResponseEntity.ok().build();
-	}
+			conversation.setMessage(message.getMessage());
+			conversation.setStatus("delivered");
+			chatRepo.save(conversation);
+            chatWebSocketHandler.notifyUsers(sender.get().getName(), receiver.get().getName(), message.getMessage());
+			return ResponseEntity.ok().build();
+		}
 	@Override
 	public List<ConversationDto> getAllMessage(String username){
 		Optional<Students> currentUser = authRepo.findOneByName(username);

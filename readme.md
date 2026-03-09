@@ -1,188 +1,137 @@
 # Real-Time Chat Application
 
-A full-stack chat application built using **Spring Boot**, **Angular**, and **JWT-based authentication**, containerized with **Docker** and orchestrated using **Docker Compose**. The system enables secure messaging between users with persistent message storage and a production-style deployment architecture.
+A full-stack one-to-one chat application built with Spring Boot + Angular, secured with JWT, and deployed with Docker Compose behind Nginx.
 
----
+## Features
 
-## 🚀 Features
+- JWT-based authentication and authorization
+- User registration and login
+- User list for chat selection
+- One-to-one conversation history
+- Send messages to selected users
+- Realtime updates using WebSocket push events
+- Polling fallback when WebSocket is disconnected
+- Nginx reverse proxy for SPA, REST APIs, and WebSocket upgrade
 
-* Secure **JWT-based authentication and authorization**
-* User **registration and login**
-* **One-to-one chat messaging**
-* Persistent chat message storage
-* **RESTful API architecture**
-* Containerized services using **Docker**
-* **Nginx reverse proxy** serving the Angular application
-* Monorepo structure for frontend and backend
+## Architecture
 
----
-
-## 🏗 Architecture
-
-```
-Browser
-   ↓
-Nginx (Angular SPA)
-   ↓
-Spring Boot Backend (JWT Authentication + Chat APIs)
-   ↓
-PostgreSQL Database
+```text
+Browser (Angular SPA)
+   |
+   v
+Nginx (port 80)
+   |-- /auth/*, /chat/*  -> Spring Boot (port 8082)
+   '-- /ws/*             -> Spring Boot WebSocket
+                              |
+                              v
+                          PostgreSQL
 ```
 
-### Stack Overview
+## Tech Stack
 
-**Frontend**
+- Frontend: Angular, TypeScript, HTML, CSS
+- Backend: Java 17, Spring Boot, Spring Security, Spring Data JPA
+- Realtime: Spring WebSocket + browser WebSocket client
+- Infra: Docker, Docker Compose, Nginx
+- Database: PostgreSQL
 
-* Angular
-* TypeScript
-* HTML / CSS
+## Project Structure
 
-**Backend**
-
-* Java
-* Spring Boot
-* Spring Security
-* JWT Authentication
-* REST APIs
-
-**Infrastructure**
-
-* Docker
-* Docker Compose
-* Nginx
-
-**Database**
-
-* PostgreSQL
-
----
-
-## 📁 Project Structure
-
-```
+```text
 chatapplication
-│
 ├── compose.yaml
-│
 ├── chatapp
 │   ├── src
 │   ├── Dockerfile
 │   └── pom.xml
-│
 └── chatappFrontend
     ├── src
     ├── Dockerfile
     └── nginx.conf
 ```
 
-* `chatapp` → Spring Boot backend service
-* `chatappFrontend` → Angular frontend served via Nginx
-* `compose.yaml` → Docker Compose orchestration
+## API Overview
 
----
+Public endpoints:
 
-## 🔐 Authentication
-
-The application uses **JWT (JSON Web Tokens)** for stateless authentication.
-
-### Register
-
-```
+```text
 POST /auth/register
-```
-
-### Login
-
-```
 POST /auth/login
 ```
 
-### Send Message
+Protected endpoints (require Bearer token):
 
-```
+```text
+GET  /chat/users
+GET  /chat/messages
+GET  /chat/messages?with=<username>
 POST /chat/send
 ```
 
-### Fetch Messages
+Authorization header:
 
-```
-GET /chat/messages
-```
-
-Protected endpoints require:
-
-```
+```text
 Authorization: Bearer <JWT_TOKEN>
 ```
 
----
+WebSocket subscription:
 
-## 🐳 Running the Application with Docker
-
-### 1. Clone the repository
-
-```
-git clone https://github.com/Akash-nitA/chatapplication.git
-cd chatapplication
+```text
+ws://localhost/ws/chat?token=<JWT_TOKEN>
 ```
 
-### 2. Start the containers
+Server sends `NEW_MESSAGE` events to sender and receiver sessions.
 
-```
-docker compose up --build
-```
+## Environment Setup
 
-### 3. Access the application
+Create `chatapp/.env` with:
 
-Frontend
-
-```
-http://localhost
-```
-
-Backend API
-
-```
-http://localhost:8082
-```
-
----
-
-## ⚙️ Environment Variables
-
-Backend configuration is managed through a `.env` file.
-
-Example:
-
-```
-JWT_SECRET=your_secret_key
+```text
 DB_USERNAME=postgres
 DB_PASSWORD=postgres123
+JWT_SECRET=<base64-encoded-secret>
 ```
 
----
+Generate a JWT secret (example):
 
-## 🛠 Engineering Highlights
-
-* Implemented **stateless JWT authentication** with Spring Security.
-* Designed clean backend architecture using **service layers, DTOs, and repository pattern**.
-* Built a **containerized multi-service architecture** using Docker and Docker Compose.
-* Configured **Nginx reverse proxy** to serve the Angular SPA and route backend API requests.
-* Eliminated CORS issues by using **same-origin reverse proxy routing**.
-
----
-
-## 📎 Repository
-
+```bash
+openssl rand -base64 32
 ```
+
+Notes:
+
+- Backend currently expects PostgreSQL reachable at `host.docker.internal:5432/postgres`.
+- Compose file does not include a dedicated PostgreSQL container yet.
+
+## Run with Docker Compose
+
+```bash
+git clone https://github.com/Akash-nitA/chatapplication.git
+cd chatapplication
+docker compose build --no-cache backend frontend
+docker compose up -d
+```
+
+Access:
+
+- Frontend: `http://localhost`
+- Backend (direct): `http://localhost:8082`
+
+## Troubleshooting
+
+- `403` on `/chat/*`: token missing/invalid, or expired.
+- `No mapping for GET /chat/users`: stale backend image; rebuild backend with `--no-cache`.
+- Repeated `GET /chat/messages?with=...`: polling fallback is active because WebSocket is not connected.
+- Verify WebSocket connection in DevTools Network: `/ws/chat?...` should return `101 Switching Protocols`.
+
+## Repository
+
+```text
 https://github.com/Akash-nitA/chatapplication
 ```
 
----
+## Author
 
-## 👤 Author
-
-**Akash Acharjee**
-
-Email: [akashacharjee212@gmail.com](mailto:akashacharjee212@gmail.com)
+Akash Acharjee  
+Email: [akashacharjee212@gmail.com](mailto:akashacharjee212@gmail.com)  
 LinkedIn: https://www.linkedin.com/in/akash-acharjee-b07909205/
